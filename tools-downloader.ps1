@@ -4,6 +4,7 @@ Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "          TOOL DOWNLOADER            " -ForegroundColor Green
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "               Made By 2qwa          " -ForegroundColor DarkGray
+Write-Host "           Inspired By ItzIce         " -ForegroundColor Cyan
 Write-Host ""
 
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
@@ -19,7 +20,6 @@ $i = 1
 while (Test-Path -Path ("$root$name$i")) { $i++ }
 $folder = "$root$name$i"
 New-Item -Path $folder -ItemType Directory | Out-Null
-Write-Host "[+] Created folder: $folder" -ForegroundColor Cyan
 Set-Location $folder
 
 function Add-DefenderExclusion {
@@ -39,7 +39,6 @@ function Add-DefenderExclusion {
     }
 }
 
-Add-DefenderExclusion
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 function Download-File {
@@ -48,7 +47,9 @@ function Download-File {
     $dest = Join-Path $folder $fileName
     $wc = New-Object System.Net.WebClient
     $wc.Headers.Add("User-Agent","Mozilla/5.0")
+
     Write-Progress -Activity "Downloading Tools" -Status $fileName -PercentComplete 0
+
     try {
         $wc.DownloadFile($url,$dest)
         Write-Progress -Activity "Downloading Tools" -Completed
@@ -61,6 +62,22 @@ function Download-File {
     } catch {
         Write-Host "[✗] Failed: $url" -ForegroundColor Red
     }
+}
+
+Write-Host ""
+Write-Host "Antivirus Options:" -ForegroundColor Cyan
+Write-Host "1. Add Defender Exclusion (Recommended)" -ForegroundColor Yellow
+Write-Host "2. Skip Exclusion" -ForegroundColor Green
+Write-Host ""
+
+$av = Read-Host "Choose (1 or 2)"
+
+if ($av -eq "1") {
+    Write-Host "[*] Adding Defender exclusion..." -ForegroundColor Cyan
+    Add-DefenderExclusion
+    Write-Host "[✓] Exclusion applied" -ForegroundColor Green
+} else {
+    Write-Host "[!] Skipping Defender exclusion" -ForegroundColor Red
 }
 
 $Zimmerman = @(
@@ -92,7 +109,6 @@ $Nirsoft = @(
 "https://www.nirsoft.net/utils/clipboardic.zip",
 "https://www.nirsoft.net/utils/driverview-x64.zip",
 "https://www.nirsoft.net/utils/fileaccesserrorview-x64.zip",
-"https://www.nirsoft.net/utils/previousfilesrecovery-x64.zip",
 "https://www.nirsoft.net/utils/previousfilesrecovery-x64.zip",
 "https://www.nirsoft.net/utils/recentfilesview.zip",
 "https://www.nirsoft.net/utils/shellbagsview.zip",
