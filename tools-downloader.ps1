@@ -130,7 +130,7 @@ $Spok = @(
 )
 
 $Other = @(
-"https://systeminformer.sourceforge.io/",
+"https://github.com/winsiderss/si-builds/releases/download/3.2.25275.112/systeminformer-build-canary-setup.exe",
 "https://www.voidtools.com/Everything-1.4.1.1029.x64-Setup.exe",
 "https://d1kpmuwb7gvu1i.cloudfront.net/Imgr/4.7.3.81%20Release/Exterro_FTK_Imager_%28x64%29-4.7.3.81.exe",
 "https://download.ccleaner.com/rcsetup154.exe",
