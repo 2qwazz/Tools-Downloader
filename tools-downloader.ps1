@@ -23,100 +23,143 @@ Write-Host "[+] Created folder: $folder" -ForegroundColor Cyan
 Set-Location $folder
 
 function Add-DefenderExclusion {
-    Write-Host "[*] Adding Windows Defender exclusion..." -ForegroundColor Cyan
     $success = $false
     try {
         if (Get-Command Get-MpPreference -ErrorAction SilentlyContinue) {
             $existing = (Get-MpPreference).ExclusionPath
-            if ($existing -notcontains $folder) {
-                Add-MpPreference -ExclusionPath $folder
-            }
-            Write-Host "[✓] Added Defender exclusion for $folder" -ForegroundColor Green
+            if ($existing -notcontains $folder) { Add-MpPreference -ExclusionPath $folder }
             $success = $true
         }
     } catch {}
-    
     if (-not $success) {
         try {
             $regPath = "HKLM:\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths"
-            if (Test-Path $regPath) {
-                New-ItemProperty -Path $regPath -Name $folder -Value 0 -PropertyType DWORD -Force | Out-Null
-                Write-Host "[✓] Added Defender exclusion via registry" -ForegroundColor Green
-                $success = $true
-            }
+            if (Test-Path $regPath) { New-ItemProperty -Path $regPath -Name $folder -Value 0 -PropertyType DWORD -Force | Out-Null }
         } catch {}
     }
 }
 
 Add-DefenderExclusion
-
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 function Download-File {
-    param ([string]$url, [string]$name = $null)
-    $fileName = $name
-    if (-not $fileName) { $fileName = Split-Path $url -Leaf }
+    param ($url)
+    $fileName = Split-Path $url -Leaf
     $dest = Join-Path $folder $fileName
     $wc = New-Object System.Net.WebClient
-    $wc.Headers.Add('User-Agent','Mozilla/5.0')
-
+    $wc.Headers.Add("User-Agent","Mozilla/5.0")
+    Write-Progress -Activity "Downloading Tools" -Status $fileName -PercentComplete 0
     try {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        $wc.DownloadFile($url, $dest)
-        $sw.Stop()
-        Write-Host "[✓] Downloaded: $fileName ($($sw.Elapsed.TotalSeconds)s)" -ForegroundColor Green
-
+        $wc.DownloadFile($url,$dest)
+        Write-Progress -Activity "Downloading Tools" -Completed
         if ($fileName.ToLower().EndsWith(".zip")) {
-            $outDir = Join-Path $folder ([System.IO.Path]::GetFileNameWithoutExtension($fileName))
+            $outDir = Join-Path $folder ([IO.Path]::GetFileNameWithoutExtension($fileName))
             if (-not (Test-Path $outDir)) { New-Item -Path $outDir -ItemType Directory | Out-Null }
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($dest, $outDir)
+            [IO.Compression.ZipFile]::ExtractToDirectory($dest,$outDir)
             Remove-Item $dest -Force
-            Write-Host "    Extracted → $outDir" -ForegroundColor DarkCyan
         }
-    }
-    catch {
+    } catch {
         Write-Host "[✗] Failed: $url" -ForegroundColor Red
     }
 }
 
-# =========================
-#   NEW URL LIST
-# =========================
-$urls = @(
-    "https://www.voidtools.com/Everything-1.4.1.1029.x64-Setup.exe",
-    "https://github.com/Col-E/Recaf/releases/download/2.21.14/recaf-2.21.14-J8-jar-with-dependencies.jar",
-    "https://www.nirsoft.net/utils/usbdrivelog.zip",
-    "https://download.ericzimmermanstools.com/net9/TimelineExplorer.zip",
-    "https://github.com/spokwn/BAM-parser/releases/download/v1.2.9/BAMParser.exe",
-    "https://github.com/spokwn/Tool/releases/download/v1.1.3/espouken.exe",
-    "https://github.com/spokwn/KernelLiveDumpTool/releases/download/v1.1/KernelLiveDumpTool.exe",
-    "https://github.com/spokwn/PathsParser/releases/download/v1.2/PathsParser.exe",
-    "https://github.com/spokwn/prefetch-parser/releases/download/v1.5.5/PrefetchParser.exe",
-    "https://github.com/spokwn/JournalTrace/releases/download/1.2/JournalTrace.exe",
-    "https://www.nirsoft.net/utils/winprefetchview-x64.zip",
-    "https://github.com/winsiderss/si-builds/releases/download/3.2.25275.112/systeminformer-build-canary-setup.exe",
-    "https://www.nirsoft.net/utils/usbdeview-x64.zip",
-    "https://www.nirsoft.net/utils/networkusageview-x64.zip",
-    "https://d1kpmuwb7gvu1i.cloudfront.net/AccessData_FTK_Imager_4.7.1.exe",
-    "https://github.com/Yamato-Security/hayabusa/releases/download/v3.6.0/hayabusa-3.6.0-win-x64.zip",
-    "https://download.ericzimmermanstools.com/AmcacheParser.zip",
-    "https://github.com/NotRequiem/InjGen/releases/download/v2.0/InjGen.exe",
-    "https://download.ericzimmermanstools.com/AppCompatCacheParser.zip",
-    "https://download.ericzimmermanstools.com/bstrings.zip",
-    "https://download.ericzimmermanstools.com/net6/JumpListExplorer.zip",
-    "https://download.ericzimmermanstools.com/MFTECmd.zip",
-    "https://download.ericzimmermanstools.com/PECmd.zip",
-    "https://download.ericzimmermanstools.com/net6/RegistryExplorer.zip",
-    "https://download.ericzimmermanstools.com/SrumECmd.zip",
-    "https://github.com/spokwn/BamDeletedKeys/releases/download/v1.0/BamDeletedKeys.exe"
+$Zimmerman = @(
+"https://download.ericzimmermanstools.com/net9/TimelineExplorer.zip",
+"https://download.ericzimmermanstools.com/net9/JumpListExplorer.zip",
+"https://download.ericzimmermanstools.com/net9/ShellBagsExplorer.zip",
+"https://download.ericzimmermanstools.com/net9/RegistryExplorer.zip",
+"https://download.ericzimmermanstools.com/net9/PECmd.zip",
+"https://download.ericzimmermanstools.com/net9/MFTECmd.zip",
+"https://download.ericzimmermanstools.com/net9/JLECmd.zip",
+"https://download.ericzimmermanstools.com/net9/SrumECmd.zip",
+"https://download.ericzimmermanstools.com/net9/bstrings.zip",
+"https://download.ericzimmermanstools.com/net9/RecentFileCacheParser.zip"
 )
 
-# Download all
+$Nirsoft = @(
+"https://www.nirsoft.net/utils/winprefetchview-x64.zip",
+"https://www.nirsoft.net/utils/lastactivityview.zip",
+"https://www.nirsoft.net/utils/executedprogramslist.zip",
+"https://www.nirsoft.net/utils/userassistview.zip",
+"https://www.nirsoft.net/utils/alternatestreamview-x64.zip",
+"https://www.nirsoft.net/utils/hashmyfiles-x64.zip",
+"https://www.nirsoft.net/utils/jumplistsview.zip",
+"https://www.nirsoft.net/utils/opensavefilesview-x64.zip",
+"https://www.nirsoft.net/utils/usbdeview-x64.zip",
+"https://www.nirsoft.net/utils/turnedontimesview.zip",
+"https://www.nirsoft.net/utils/regscanner-x64.zip",
+"https://www.nirsoft.net/utils/browserdownloadsview-x64.zip",
+"https://www.nirsoft.net/utils/clipboardic.zip",
+"https://www.nirsoft.net/utils/driverview-x64.zip",
+"https://www.nirsoft.net/utils/fileaccesserrorview-x64.zip",
+"https://www.nirsoft.net/utils/previousfilesrecovery-x64.zip",
+"https://www.nirsoft.net/utils/previousfilesrecovery-x64.zip",
+"https://www.nirsoft.net/utils/recentfilesview.zip",
+"https://www.nirsoft.net/utils/shellbagsview.zip",
+"https://www.nirsoft.net/utils/taskschedulerview-x64.zip",
+"https://www.nirsoft.net/utils/uninstallview-x64.zip",
+"https://www.nirsoft.net/utils/usbdrivelog.zip"
+)
+
+$Spok = @(
+"https://github.com/spokwn/JournalTrace/releases/latest/download/JournalTrace.exe",
+"https://github.com/spokwn/PathsParser/releases/latest/download/PathsParser.exe",
+"https://github.com/spokwn/BAM-parser/releases/latest/download/BAMParser.exe",
+"https://github.com/spokwn/prefetch-parser/releases/latest/download/PrefetchParser.exe",
+"https://github.com/spokwn/pcasvc-executed/releases/latest/download/pcasvc-executed.exe",
+"https://github.com/spokwn/ActivitiesCache-execution/releases/latest/download/ActivitiesCache-execution.exe",
+"https://github.com/spokwn/Replaceparser/releases/latest/download/Replaceparser.exe",
+"https://github.com/spokwn/BamDeletedKeys/releases/latest/download/BamDeletedKeys.exe",
+"https://github.com/spokwn/Tool/releases/latest/download/espouken.exe"
+)
+
+$Other = @(
+"https://systeminformer.sourceforge.io/",
+"https://www.voidtools.com/Everything-1.4.1.1029.x64-Setup.exe",
+"https://d1kpmuwb7gvu1i.cloudfront.net/Imgr/4.7.3.81%20Release/Exterro_FTK_Imager_%28x64%29-4.7.3.81.exe",
+"https://download.ccleaner.com/rcsetup154.exe",
+"https://github.com/horsicq/DIE-engine/releases/latest/download/DIE-x64.zip",
+"https://mh-nexus.de/downloads/HxDPortableSetup.zip",
+"https://www.winitor.com/tools/pestudio/current/pestudio.zip",
+"https://download.sysinternals.com/files/Strings.zip",
+"https://files1.majorgeeks.com/400376550b320e37264e5ab1318d2973a41a3689/office/bintext303.zip",
+"https://github.com/deathmarine/Luyten/releases/latest/download/luyten.zip",
+"https://github.com/Col-E/Recaf/releases/latest/download/Recaf.zip",
+"https://download.sysinternals.com/files/ProcessExplorer.zip",
+"https://download.sysinternals.com/files/Autoruns.zip",
+"https://download.sysinternals.com/files/ProcessMonitor.zip",
+"https://download.sysinternals.com/files/TCPView.zip",
+"https://github.com/Yamato-Security/hayabusa/releases/latest/download/hayabusa-win-x64.zip"
+)
+
+Write-Host ""
+Write-Host "Select tool categories to download (comma separated):" -ForegroundColor Cyan
+Write-Host "1. Zimmerman Tools" -ForegroundColor Red
+Write-Host "2. Nirsoft Tools" -ForegroundColor Red
+Write-Host "3. Spok's Tools" -ForegroundColor Red
+Write-Host "4. Other Tools" -ForegroundColor Red
+Write-Host ""
+
+$input = Read-Host "Enter numbers"
+$choices = $input -split "," | ForEach-Object { $_.Trim() }
+
+$downloadList = @()
+
+foreach ($c in $choices) {
+    switch ($c) {
+        "1" { $downloadList += $Zimmerman }
+        "2" { $downloadList += $Nirsoft }
+        "3" { $downloadList += $Spok }
+        "4" { $downloadList += $Other }
+    }
+}
+
 $counter = 0
-$total = $urls.Count
-foreach ($url in $urls) {
+$total = $downloadList.Count
+
+foreach ($url in $downloadList) {
     $counter++
-    Write-Host "`n[$counter/$total] Starting: $(Split-Path $url -Leaf)" -ForegroundColor Cyan
+    Write-Host "`n[$counter/$total] Downloading: $(Split-Path $url -Leaf)" -ForegroundColor Cyan
     Download-File $url
 }
 
