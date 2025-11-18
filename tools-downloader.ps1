@@ -132,19 +132,19 @@ $Spok = @(
 $Other = @(
 "https://github.com/winsiderss/si-builds/releases/download/3.2.25275.112/systeminformer-build-canary-setup.exe",
 "https://www.voidtools.com/Everything-1.4.1.1029.x64-Setup.exe",
-"https://d1kpmuwb7gvu1i.cloudfront.net/Imgr/4.7.3.81%20Release/Exterro_FTK_Imager_%28x64%29-4.7.3.81.exe",
+"https://d1kpmuwb7gvu1i.cloudfront.net/AccessData_FTK_Imager_4.7.1.exe",
 "https://download.ccleaner.com/rcsetup154.exe",
-"https://github.com/horsicq/DIE-engine/releases/latest/download/die_win64_portable.zip",
+"https://github.com/horsicq/DIE-engine/releases/download/3.10/die_win64_portable_3.10_x64.zip",
 "https://mh-nexus.de/downloads/HxDPortableSetup.zip",
 "https://www.winitor.com/tools/pestudio/current/pestudio.zip",
 "https://download.sysinternals.com/files/Strings.zip",
-"https://github.com/deathmarine/Luyten/releases/latest/download/luyten.jar",
+"https://github.com/deathmarine/Luyten/releases/download/v0.5.4_Rebuilt_with_Latest_depenencies/luyten-0.5.4.jar",
 "https://github.com/Col-E/Recaf/releases/download/2.21.14/recaf-2.21.14-J8-jar-with-dependencies.jar",
 "https://download.sysinternals.com/files/ProcessExplorer.zip",
 "https://download.sysinternals.com/files/Autoruns.zip",
 "https://download.sysinternals.com/files/ProcessMonitor.zip",
 "https://download.sysinternals.com/files/TCPView.zip",
-"https://github.com/Yamato-Security/hayabusa/releases/latest/download/hayabusa-win-x64.zip"
+"https://github.com/Yamato-Security/hayabusa/releases/download/v3.7.0/hayabusa-3.7.0-win-aarch64.zip"
 )
 
 Write-Host ""
