@@ -3,7 +3,7 @@ Write-Host ""
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "          TOOL DOWNLOADER            " -ForegroundColor Green
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host "               Made By 2qwa          " -ForegroundColor DarkGray
+Write-Host "               Made By 2qwa          " -ForegroundColor Green
 Write-Host "           Inspired By ItzIce         " -ForegroundColor Cyan
 Write-Host ""
 
