@@ -10,7 +10,7 @@ Write-Host "  ==================================================================
 Write-Host ""
 Write-Host "  ============================================================================" -ForegroundColor DarkGray
 Write-Host "                            Made By 2qwa                                     " -ForegroundColor Cyan
-Write-Host "                        Inspired By ItzIce                                   " -ForegroundColor DarkCyan
+Write-Host "                        Inspired By ItzIceHere                               " -ForegroundColor DarkCyan
 Write-Host "  ============================================================================" -ForegroundColor DarkGray
 Write-Host ""
 
